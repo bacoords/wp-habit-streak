@@ -10,11 +10,6 @@
  * Version:         0.1.0
  *
  * @package         Wp_Habit_Streak
- *
- * @todo Add a settings page to set the content type
- * @todo Add cacheing
- * @todo Add a actions to update the streak
- * @todo Add an option to ignore weekends
  */
 
 /**
