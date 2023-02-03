@@ -63,54 +63,71 @@ class WP_Habit_Streak {
 	 */
 	private function calculate_streak( $user_id ) {
 
-		// Set batch limit (will be broken into additional function).
-		$batch = 100;
+		// Set the streak to 0.
+		$streak = 0;
 
+		// Set batch numbers and limit.
+		$batch  = 500;
+		$offset = 0;
 		global $wpdb;
 
-		// Get the current users published posts in descending order.
-		$posts = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID, post_date FROM $wpdb->posts WHERE post_author = %d AND post_type = 'post' AND post_status = 'publish' ORDER BY post_date DESC LIMIT %d",
-				$user_id,
-				$batch
-			)
-		);
+		do {
+			$offset++;
 
-		if ( ! $posts ) {
-			return 0;
-		}
+			// Get the current users published posts in descending order.
+			$posts = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_date FROM $wpdb->posts WHERE post_author = %d AND post_type = 'post' AND post_status = 'publish' ORDER BY post_date DESC LIMIT %d OFFSET %d",
+					$user_id,
+					$batch,
+					( $offset - 1 ) * $batch
+				)
+			);
 
-		// Get the first post date.
-		$first_post_date = wp_date( 'Y-m-d', strtotime( $posts[0]->post_date ) );
-
-		// If the first post wasn't yesterday and wasn't today, return 0.
-		if ( wp_date( 'Y-m-d', strtotime( '-1 day' ) ) !== $first_post_date && wp_date( 'Y-m-d' ) !== $first_post_date ) {
-			return 0;
-		}
-
-		// Loop through the posts until we find a gap.
-		$streak = 1;
-		foreach ( $posts as $key => $post ) {
-			// If this is the first post, skip it.
-			if ( 0 === $key ) {
-				continue;
-			}
-
-			// Get the previous post date.
-			$previous_post_date = wp_date( 'Y-m-d', strtotime( $posts[ $key - 1 ]->post_date ) );
-
-			// Get the current post date.
-			$current_post_date = wp_date( 'Y-m-d', strtotime( $post->post_date ) );
-
-			// If the previous post date is not the day before the current post date, return the streak.
-			if ( wp_date( 'Y-m-d', strtotime( '-1 day', strtotime( $previous_post_date ) ) ) !== $current_post_date ) {
+			if ( ! $posts ) {
 				return $streak;
 			}
 
-			// Increment the streak.
-			$streak++;
-		}
+			if ( 1 === $offset ) {
+
+				// Get the first post date.
+				$first_post_date = wp_date( 'Y-m-d', strtotime( $posts[0]->post_date ) );
+
+				// If the first post wasn't yesterday and wasn't today, return 0.
+				if ( wp_date( 'Y-m-d', strtotime( '-1 day' ) ) !== $first_post_date && wp_date( 'Y-m-d' ) !== $first_post_date ) {
+					return $streak;
+				}
+
+				// Get the previous post date.
+				$previous_post_date = wp_date( 'Y-m-d', strtotime( $posts[0]->post_date ) );
+
+				$streak++;
+			}
+
+			foreach ( $posts as $key => $post ) {
+				// If this is the first post, skip it.
+				if ( 0 === $key && 1 === $offset ) {
+					continue;
+				}
+
+				// Get the current post date.
+				$current_post_date = wp_date( 'Y-m-d', strtotime( $post->post_date ) );
+
+				// If the previous post date is not the day before or same day as the current post date, return the streak.
+				if (
+					wp_date( 'Y-m-d', strtotime( '-1 day', strtotime( $previous_post_date ) ) ) !== $current_post_date
+					&& wp_date( 'Y-m-d', strtotime( 'today', strtotime( $previous_post_date ) ) ) !== $current_post_date
+				) {
+					return $streak;
+				}
+
+				// Increment the streak.
+				$streak++;
+
+				// Set the previous post date to the current post date.
+				$previous_post_date = $current_post_date;
+			}
+		} while ( ( $offset * $batch ) === $streak );
 
 		return $streak;
 	}
