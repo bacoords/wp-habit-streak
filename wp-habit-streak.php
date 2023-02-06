@@ -24,6 +24,8 @@ class WP_Habit_Streak {
 		if ( current_user_can( 'edit_posts' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'add_streak_menu' ), 99 );
 		}
+
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
 	}
 
 
@@ -132,6 +134,19 @@ class WP_Habit_Streak {
 		return $streak;
 	}
 
+	public function enqueue_block_editor_assets() {
+
+		// Get dependencies from index.asset.php.
+		$asset_file = include( plugin_dir_path( __FILE__ ) . 'build/index.asset.php' );
+
+		// Enqueue the bundled block JS file.
+		wp_enqueue_script(
+			'wp-habit-streak',
+			plugins_url( 'build/index.js', __FILE__ ),
+			$asset_file['dependencies'],
+			$asset_file['version']
+		);
+	}
 }
 
 /**
