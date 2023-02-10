@@ -25,6 +25,8 @@ class WP_Habit_Streak {
 			add_action( 'admin_bar_menu', array( $this, 'add_streak_menu' ), 99 );
 		}
 
+		add_action( 'save_post', array( $this, 'save_post_hook' ) );
+
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
 	}
 
@@ -54,7 +56,17 @@ class WP_Habit_Streak {
 	 */
 	private function get_streak() {
 		// Add some caching here, and update only on publish hooks or somthing, settings, etc.
-		return $this->calculate_streak( get_current_user_id() );
+		$streak = get_user_meta( get_current_user_id(), 'wp_habit_streak', true );
+		return $streak ? $streak : 0;
+	}
+
+
+	/**
+	 * Save the streak for the current user, when a post is saved
+	 */
+	public function save_post_hook() {
+		$streak = $this->calculate_streak( get_current_user_id() );
+		update_user_meta( get_current_user_id(), 'wp_habit_streak', $streak );
 	}
 
 	/**
