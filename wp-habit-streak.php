@@ -146,6 +146,9 @@ class WP_Habit_Streak {
 		return $streak;
 	}
 
+	/**
+	 * Enqueue the block editor assets
+	 */
 	public function enqueue_block_editor_assets() {
 
 		// Get dependencies from index.asset.php.
