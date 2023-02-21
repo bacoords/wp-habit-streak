@@ -17,6 +17,11 @@
  */
 class WP_Habit_Streak {
 
+	/**
+	 * The meta key for the streak
+	 *
+	 * @var string
+	 */
 	public $meta_key;
 
 	/**
