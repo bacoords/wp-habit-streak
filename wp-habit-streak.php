@@ -41,6 +41,10 @@ class WP_Habit_Streak {
 
 		add_action( 'init', array( $this, 'register_our_streak_user_meta' ) );
 
+		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+
 	}
 
 
@@ -180,17 +184,61 @@ class WP_Habit_Streak {
 	 */
 	public function enqueue_block_editor_assets() {
 
-		// Get dependencies from index.asset.php.
-		$asset_file = include( plugin_dir_path( __FILE__ ) . 'build/index.asset.php' );
+		// Get dependencies from habit-streak.asset.php.
+		$asset_file = include plugin_dir_path( __FILE__ ) . 'build/habit-streak.asset.php';
 
 		// Enqueue the bundled block JS file.
 		wp_enqueue_script(
 			'wp-habit-streak',
-			plugins_url( 'build/index.js', __FILE__ ),
+			plugins_url( 'build/habit-streak.js', __FILE__ ),
 			$asset_file['dependencies'],
 			$asset_file['version']
 		);
 	}
+
+
+	/**
+	 * Add the settings page
+	 */
+	public function add_settings_page() {
+		add_options_page( 'WP Habit Streak', 'WP Habit Streak', 'manage_options', 'wp-habit-streak', array( $this, 'settings_page' ) );
+	}
+
+	/**
+	 * Render the settings page
+	 */
+	public function settings_page() {
+		?>
+		<div class="wrap">
+			<h1>WP Habit Streak</h1>
+			<div id="wp-habit-settings-app"></div>
+		</div>
+		<?php
+	}
+
+
+	/**
+	 * Enqueue the block editor assets
+	 */
+	public function enqueue_admin_assets() {
+
+		$screen = get_current_screen();
+		if ( 'settings_page_wp-habit-streak' !== $screen->id ) {
+			return;
+		}
+
+		// Get dependencies from habit-streak-options.asset.php.
+		$asset_file = include plugin_dir_path( __FILE__ ) . 'build/habit-streak-options.asset.php';
+
+		// Enqueue the bundled block JS file.
+		wp_enqueue_script(
+			'wp-habit-streak-options',
+			plugins_url( 'build/habit-streak-options.js', __FILE__ ),
+			$asset_file['dependencies'],
+			$asset_file['version']
+		);
+	}
+
 }
 
 /**
