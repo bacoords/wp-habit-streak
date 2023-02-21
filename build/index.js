@@ -2,16 +2,6 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "@wordpress/compose":
-/*!*********************************!*\
-  !*** external ["wp","compose"] ***!
-  \*********************************/
-/***/ ((module) => {
-
-module.exports = window["wp"]["compose"];
-
-/***/ }),
-
 /***/ "@wordpress/data":
 /*!******************************!*\
   !*** external ["wp","data"] ***!
@@ -145,10 +135,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/compose */ "@wordpress/compose");
-/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_compose__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
 
 // Hook into the PluginPostPublishPanel component
 
@@ -157,17 +145,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-const HabitStreakPostPublishPanel = (0,_wordpress_compose__WEBPACK_IMPORTED_MODULE_4__.compose)((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.withSelect)(select => {
-  return {
-    postType: select('core/editor').getCurrentPostType(),
-    currentUser: select('core').getCurrentUser()
-  };
-}))(_ref => {
-  let {
+function HabitStreakPostPublishPanel() {
+  const {
     postType,
     currentUser
-  } = _ref;
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
+    return {
+      postType: select('core/editor').getCurrentPostType(),
+      currentUser: select('core').getCurrentUser()
+    };
+  });
   if ('post' !== postType) {
     return null;
   }
@@ -175,8 +162,8 @@ const HabitStreakPostPublishPanel = (0,_wordpress_compose__WEBPACK_IMPORTED_MODU
   // Get user meta value 'wp_habit_streak'
   let streak = currentUser.hasOwnProperty('meta') ? currentUser.meta.wp_habit_streak[0] : 0;
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_1__.PluginPostPublishPanel, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "WP Habit Streak")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, sprintf( /* translators: %1$s: Number of streak. */
-  (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)("Congrats! Your current streak is %1$s!", "wp-habit-streak"), streak)));
-});
+  (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Congrats! Your current streak is %1$s!", "wp-habit-streak"), streak)));
+}
 (0,_wordpress_plugins__WEBPACK_IMPORTED_MODULE_2__.registerPlugin)('habit-streak-post-publish-panel', {
   render: HabitStreakPostPublishPanel
 });

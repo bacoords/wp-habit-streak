@@ -3,20 +3,18 @@
 // Import the dependencies
 import { PluginPostPublishPanel } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
-import { withSelect } from '@wordpress/data';
-import { compose } from '@wordpress/compose';
+import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
 
-const HabitStreakPostPublishPanel = compose(
-	withSelect( select => {
+function HabitStreakPostPublishPanel() {
+	const { postType, currentUser } = useSelect( select => {
 		return {
 			postType: select( 'core/editor' ).getCurrentPostType(),
 			currentUser: select( 'core' ).getCurrentUser(),
 		};
-	}
-	)
-)( ( { postType, currentUser } ) => {
+	});
+
 	if ( 'post' !== postType ) {
 		return null;
 	}
@@ -37,7 +35,5 @@ const HabitStreakPostPublishPanel = compose(
 		</PluginPostPublishPanel>
 	);
 }
-);
 
 registerPlugin( 'habit-streak-post-publish-panel', { render: HabitStreakPostPublishPanel } );
-
