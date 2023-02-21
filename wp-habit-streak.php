@@ -95,6 +95,7 @@ class WP_Habit_Streak {
 	public function save_post_hook() {
 		$streak = $this->calculate_streak( get_current_user_id() );
 		update_user_meta( get_current_user_id(), $this->meta_key, $streak );
+		clean_user_cache( get_current_user_id() );
 	}
 
 	/**
