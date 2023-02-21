@@ -17,10 +17,15 @@
  */
 class WP_Habit_Streak {
 
+	public $meta_key;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
+
+		$this->meta_key = 'wp_habit_streak';
+
 		if ( current_user_can( 'edit_posts' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'add_streak_menu' ), 99 );
 		}
@@ -28,6 +33,9 @@ class WP_Habit_Streak {
 		add_action( 'save_post', array( $this, 'save_post_hook' ) );
 
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
+
+		add_action( 'init', array( $this, 'register_our_streak_user_meta' ) );
+
 	}
 
 
@@ -50,13 +58,28 @@ class WP_Habit_Streak {
 
 
 	/**
+	 * Register our user meta
+	 */
+	public function register_our_streak_user_meta() {
+		register_meta(
+			'user',
+			$this->meta_key,
+			array(
+				'show_in_rest' => true,
+				'type'         => 'integer',
+				'description'  => 'The current streak for the user',
+			)
+		);
+	}
+
+
+	/**
 	 * Get the current streak for the current user
 	 *
 	 * @return int
 	 */
 	private function get_streak() {
-		// Add some caching here, and update only on publish hooks or somthing, settings, etc.
-		$streak = get_user_meta( get_current_user_id(), 'wp_habit_streak', true );
+		$streak = get_user_meta( get_current_user_id(), $this->meta_key, true );
 		return $streak ? $streak : 0;
 	}
 
@@ -66,7 +89,7 @@ class WP_Habit_Streak {
 	 */
 	public function save_post_hook() {
 		$streak = $this->calculate_streak( get_current_user_id() );
-		update_user_meta( get_current_user_id(), 'wp_habit_streak', $streak );
+		update_user_meta( get_current_user_id(), $this->meta_key, $streak );
 	}
 
 	/**
